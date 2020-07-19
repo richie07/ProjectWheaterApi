@@ -15,5 +15,17 @@ public class ApiHelper {
 
     }
 
+    public Response getWeatherXY(String url,Float latitud,Float longitud,String key){
+        Response response = given()
+                .param("lat",latitud)
+                .param("lon",longitud)
+                .param("appid",key)
+                .when()
+                .get(url);
+
+        return response;
+
+    }
+
 
 }

@@ -5,30 +5,22 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import io.restassured.response.ResponseBody;
 import org.junit.Assert;
 import supports.requestWeather;
-
-import static io.restassured.RestAssured.*;
+import supports.requestWeatherXY;
 
 public class ServicioWheater {
-    Response resp,respCooord;
-    String requestCiudad, requestCiudadXY;
-    Integer requestHumidity,requestHumidityXY;
-    String requestWeather,requestWeatherXY;
-    Float latitud,longitud;
-
     requestWeather weather;
+    requestWeatherXY weatherXY;
 
     public ServicioWheater() {
         weather = new requestWeather();
+        weatherXY = new requestWeatherXY();
     }
 
     @Then("the API call got success with status code {int}")
     public void theAPICallGotSuccessWithStatusCode(int statuscode) {
-        Assert.assertEquals(weather.getStatus(), statuscode);
+        Assert.assertEquals(statuscode,weather.getStatus() );
 
     }
 
@@ -36,10 +28,6 @@ public class ServicioWheater {
     @Given("get place en el service {string} , {string}")
     public void getPlaceEnElService(String ciudad, String appid) {
         weather.getCiudad(ciudad,appid);
-    }
-
-    @And("status is response body is {string}")
-    public void statusIsResponseBodyIs(String arg0) {
     }
 
     @And("response body as {string}")
@@ -67,72 +55,28 @@ public class ServicioWheater {
 
     @And("response body show {string} like the previos query")
     public void responseBodyShowCiudadLikeThePreviosQuery(String ciudad) {
-        requestCiudadXY  = respCooord.then()
-                .extract()
-                .path("name");
-        Assert.assertEquals(ciudad,requestCiudadXY);
+        Assert.assertEquals(ciudad, weatherXY.getRequestCiudad());
 
     }
 
     @And("response body show humidity like the previos query")
     public void responseBodyShowHumidityLikeThePreviosQuery() {
-        requestHumidityXY  = respCooord.then()
-                .extract()
-                .path("main.humidity");
-
-        Assert.assertEquals(requestHumidityXY,requestHumidity);
-
+        Assert.assertEquals(weather.getRequestHumedad(), weatherXY.getRequestHumedad());
     }
 
     @And("response body show weather like the previos query")
     public void responseBodyShowWeatherLikeThePreviosQuery() {
-       String requestWeatherXY  = respCooord.then()
-                .extract()
-                .path("weather[0].main");
-        Assert.assertEquals(requestWeatherXY,requestWeather);
+        Assert.assertEquals(weather.getRequestWeather(), weatherXY.getRequestWeather());
 
     }
 
     @Given("enter coordinates of {string} de {string}")
     public void enterCoordinatesOfDe(String ciudad, String appid) {
-
-        resp= given()
-                .param("q", ciudad)
-                .param("appid",appid)
-                .when()
-                .get("https://openweathermap.org/data/2.5/weather");
-
-        latitud = resp.then()
-                .extract()
-                .path("coord.lat");
-
-        longitud = resp.then()
-                .extract()
-                .path("coord.lon");
-
-        requestCiudad = resp.then()
-                .extract()
-                .path("name");
-
-        requestWeather = resp.then()
-                .extract()
-                .path("weather[0].main");
-
-        requestHumidity = resp.then()
-                .extract()
-                .path("main.humidity");
-
-        respCooord = given()
-                .param("lat", latitud)
-                .param("lon",longitud)
-                .param("appid",appid)
-                .when()
-                .get("https://openweathermap.org/data/2.5/weather");
-
+        weatherXY.getXY(weather.getRequestLatitud(),weather.getRequestLongitud(),appid);
     }
 
     @Then("the API call geographic coordinates got success with status code {int}")
     public void theAPICallGeographicCoordinatesGotSuccessWithStatusCode(int statuscode) {
-        Assert.assertEquals(respCooord.getStatusCode(), statuscode);
+        Assert.assertEquals(statuscode,weatherXY.getStatus());
     }
 }

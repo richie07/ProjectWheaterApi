@@ -15,4 +15,10 @@ public class Help {
                 .extract()
                 .path(requestName);
     }
+
+    public Float getRequestFloat(String requestName){
+        return requestWeather.responseUser.then()
+                .extract()
+                .path(requestName);
+    }
 }

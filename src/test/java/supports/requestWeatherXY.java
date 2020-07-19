@@ -3,19 +3,19 @@ package supports;
 import Util.Help;
 import io.restassured.response.Response;
 
-public class requestWeather {
+public class requestWeatherXY {
     ApiHelper apiHelper;
     Help help;
     public static Response responseUser;
 
-    public requestWeather() {
+    public requestWeatherXY() {
         apiHelper = new ApiHelper();
         help = new Help();
     }
 
-    public void getCiudad(String ciudad,String key){
+    public void getXY(Float latitud,Float longitud,String key){
         String url = "https://openweathermap.org/data/2.5/weather";
-        responseUser = apiHelper.getWeather(url,ciudad,key);
+        responseUser = apiHelper.getWeatherXY(url,latitud,longitud,key);
 
     }
 
@@ -35,14 +35,5 @@ public class requestWeather {
     public String getRequestWeather(){
         return help.getRequest("weather[0].main");
     }
-
-    public Float getRequestLatitud(){
-        return help.getRequestFloat("coord.lat");
-    }
-
-    public Float getRequestLongitud(){
-        return help.getRequestFloat("coord.lon");
-    }
-
 
 }
