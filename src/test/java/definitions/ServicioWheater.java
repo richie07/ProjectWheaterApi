@@ -9,6 +9,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import org.junit.Assert;
+import supports.requestWeather;
 
 import static io.restassured.RestAssured.*;
 
@@ -19,20 +20,22 @@ public class ServicioWheater {
     String requestWeather,requestWeatherXY;
     Float latitud,longitud;
 
+    requestWeather weather;
+
+    public ServicioWheater() {
+        weather = new requestWeather();
+    }
+
     @Then("the API call got success with status code {int}")
     public void theAPICallGotSuccessWithStatusCode(int statuscode) {
-        Assert.assertEquals(resp.getStatusCode(), statuscode);
+        Assert.assertEquals(weather.getStatus(), statuscode);
 
     }
 
 
     @Given("get place en el service {string} , {string}")
     public void getPlaceEnElService(String ciudad, String appid) {
-        resp= given()
-                .param("q", ciudad)
-                .param("appid",appid)
-                .when()
-                .get("https://openweathermap.org/data/2.5/weather");
+        weather.getCiudad(ciudad,appid);
     }
 
     @And("status is response body is {string}")
@@ -41,30 +44,20 @@ public class ServicioWheater {
 
     @And("response body as {string}")
     public void responseBodyAs(String ciudad) {
-         requestCiudad = resp.then()
-                .extract()
-                .path("name");
 
-         Assert.assertEquals(ciudad,requestCiudad);
+         Assert.assertEquals(ciudad,weather.getRequestCiudad());
     }
 
     @And("response body show humidity as integer")
     public void responseBodyShowHumidityAsInteger() {
-        requestHumidity = resp.then()
-                .extract()
-                .path("main.humidity");
-
-        Assert.assertTrue(requestHumidity > 0);
-        Assert.assertTrue(requestHumidity < 100);
-        Assert.assertTrue((requestHumidity.toString().matches("[0-9]+")));
+        Assert.assertTrue(weather.getRequestHumedad() > 0);
+        Assert.assertTrue(weather.getRequestHumedad() < 100);
+        Assert.assertTrue((weather.getRequestHumedad().toString().matches("[0-9]+")));
     }
 
     @And("response body show weather as description")
     public void responseBodyShowWeatherAsDescription() {
-        requestWeather = resp.then()
-                .extract()
-                .path("weather[0].main");
-        Assert.assertTrue(requestWeather.matches("[a-zA-Z]+"));
+        Assert.assertTrue(weather.getRequestWeather().matches("[a-zA-Z]+"));
     }
 
     @When("user calls http request")
