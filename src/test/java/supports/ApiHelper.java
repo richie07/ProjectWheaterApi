@@ -1,5 +1,6 @@
 package supports;
 
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import static io.restassured.RestAssured.*;
 
@@ -25,6 +26,31 @@ public class ApiHelper {
 
         return response;
 
+    }
+
+    public Response postApiRegresIn(String url, String name, String job){
+        Response response = given()
+                .body("{\n" +
+                        "    \"name\": \""+name+"\",\n" +
+                        "    \"job\": \""+job+"\"\n" +
+                        "}")
+                .when()
+                .post(url);
+
+        return response;
+    }
+
+    public Response putApiRegrein(String url, String name, String job){
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .body("{\n" +
+                        "    \"name\": \""+name+"\",\n" +
+                        "    \"job\": \""+job+"\"\n" +
+                        "}")
+                .when()
+                .put(url);
+
+        return response;
     }
 
 
